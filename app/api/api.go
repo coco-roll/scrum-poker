@@ -19,7 +19,7 @@ func GetTest(c *gin.Context) {
 			"msg":  e.GetMsg(code),
 			"data": "",
 		})
-		defer models.CloseDB()
+		models.CloseDB()
 		return
 	}
 	data := make(map[string]interface{})

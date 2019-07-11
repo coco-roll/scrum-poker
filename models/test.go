@@ -7,7 +7,7 @@ import (
 
 type Test struct {
 	Model
-	NAME string
+	NAME string `json:"name"`
 }
 
 func GetTestModel(id int) (test Test) {
