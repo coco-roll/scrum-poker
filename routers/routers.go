@@ -21,6 +21,9 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/test", api.AddTest)
 		apiv1.PUT("/test/:id", api.EditTest)
 		apiv1.DELETE("/test/:id", api.DeleteTest)
+		apiv1.GET("/url", api.GetUrl)
+		apiv1.GET("/poker", api.Poker)
+		apiv1.GET("/setck", api.SetCk)
 	}
 
 	return r
