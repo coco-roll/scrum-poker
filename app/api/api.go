@@ -119,6 +119,8 @@ var upGrader = websocket.Upgrader{
 type WsPoker struct {
 	ws *websocket.Conn
 	Poker string `json:"poker"`
+	code string
+	mt int
 }
 var wspoker []WsPoker
 //webSocket请求ping 返回pong  
@@ -129,18 +131,22 @@ func Ping(c *gin.Context) {
 	   return  
 	}  
 	defer ws.Close()  
-	
+	code := ""
 	for {
 	   //读取ws中的数据  
 	   mt, message, err := ws.ReadMessage()  
 	   if err != nil {  
 		  break  
 	   }
-	   msg := string(message)  
+	   msg := string(message)
+	     
 	   //链接
 	   if (strings.Index(msg, "type=1") != -1) {
-		    fmt.Println(wspoker)
-			wsClint := WsPoker{ws:ws}
+			fmt.Println(wspoker)
+			str := strings.Split(msg, "&")
+			strr := strings.Split(str[1], "=")
+			code = strr[1]
+			wsClint := WsPoker{ws:ws,code:strr[1],mt:mt}
 			wspoker = append(wspoker, wsClint)
 			fmt.Println(wspoker)
 		//翻牌
@@ -153,33 +159,48 @@ func Ping(c *gin.Context) {
 				if (v.ws == ws){
 					wspoker[k].Poker = poker
 				}
-				if(wspoker[k].Poker == ""){
-					isOver = 0
+				if( v.code == code){
+					if(wspoker[k].Poker == ""){
+						isOver = 0
+					}
+					num += 1
 				}
-				num += 1
+				
 			}
 			fmt.Println(wspoker)
+			fmt.Println(isOver)
+			fmt.Println(num)
 			if(isOver == 1 && num != 1){
 				
 				res := make(map[string]int)
 				for  _,v := range wspoker{
-					if _, ok := res[v.Poker]; ok {
-						res[v.Poker] += 1
-					}else{
-						res[v.Poker] = 1
+					if (v.code == code){
+						if _, ok := res[v.Poker]; ok {
+							res[v.Poker] += 1
+						}else{
+							res[v.Poker] = 1
+						}
 					}
 				}
 				mjson,_ :=json.Marshal(res)
 				//写入ws数据
-				err = ws.WriteMessage(mt, mjson)  
-				if err != nil {  
-					
-				}  
+				for  _,v := range wspoker{
+					if (v.code == code){
+						err = v.ws.WriteMessage(v.mt, mjson)
+						fmt.Println(v.mt)
+						fmt.Println("发送消息")  
+						if err != nil {  
+							
+						} 
+					}
+				} 
 			}
 		//重新开始	
 	   } else if (strings.Index(msg, "type=3") != -1) {
-			for  k,_ := range wspoker{
-				wspoker[k].Poker = ""
+			for  k,v := range wspoker{
+				if(v.code == code){
+					wspoker[k].Poker = ""
+				}
 			}
 			fmt.Println(wspoker)
 	   }
