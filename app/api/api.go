@@ -6,8 +6,11 @@ import (
 	"scrum-poker/models"
 	"scrum-poker/pkg/e"
 	"strconv"
+	"strings"
 	"math/rand"
-	// "fmt"
+	"encoding/json"
+	"fmt"
+	"github.com/gorilla/websocket"
 )
 
 //查
@@ -107,3 +110,86 @@ func returnjson(c *gin.Context, status int, data map[string]interface{}) {
 		"data": data,
 	})
 }
+//websocket
+var upGrader = websocket.Upgrader{  
+	CheckOrigin: func (r *http.Request) bool {  
+	   return true  
+	},  
+} 
+type WsPoker struct {
+	ws *websocket.Conn
+	Poker string `json:"poker"`
+}
+var wspoker []WsPoker
+//webSocket请求ping 返回pong  
+func Ping(c *gin.Context) {  
+	//升级get请求为webSocket协议
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)  
+	if err != nil {  
+	   return  
+	}  
+	defer ws.Close()  
+	
+	for {
+	   //读取ws中的数据  
+	   mt, message, err := ws.ReadMessage()  
+	   if err != nil {  
+		  break  
+	   }
+	   msg := string(message)  
+	   //链接
+	   if (strings.Index(msg, "type=1") != -1) {
+		    fmt.Println(wspoker)
+			wsClint := WsPoker{ws:ws}
+			wspoker = append(wspoker, wsClint)
+			fmt.Println(wspoker)
+		//翻牌
+	   } else if (strings.Index(msg, "type=2") != -1) {
+		    len := len(msg)
+			poker := msg[len-1:]
+			isOver := 1
+			num := 0
+			for  k,v := range wspoker{
+				if (v.ws == ws){
+					wspoker[k].Poker = poker
+				}
+				if(wspoker[k].Poker == ""){
+					isOver = 0
+				}
+				num += 1
+			}
+			fmt.Println(wspoker)
+			if(isOver == 1 && num != 1){
+				
+				res := make(map[string]int)
+				for  _,v := range wspoker{
+					if _, ok := res[v.Poker]; ok {
+						res[v.Poker] += 1
+					}else{
+						res[v.Poker] = 1
+					}
+				}
+				mjson,_ :=json.Marshal(res)
+				//写入ws数据
+				err = ws.WriteMessage(mt, mjson)  
+				if err != nil {  
+					
+				}  
+			}
+		//重新开始	
+	   } else if (strings.Index(msg, "type=3") != -1) {
+			for  k,_ := range wspoker{
+				wspoker[k].Poker = ""
+			}
+			fmt.Println(wspoker)
+	   }
+	   
+	}
+	//断开链接
+	for  k,v := range wspoker{
+		if (v.ws == ws){
+			wspoker = append(wspoker[:k], wspoker[k+1:]...)
+		}
+	}
+	fmt.Println(wspoker)
+ }  

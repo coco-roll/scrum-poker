@@ -24,6 +24,7 @@ func InitRouter() *gin.Engine {
 		apiv1.GET("/url", api.GetUrl)
 		apiv1.GET("/poker", api.Poker)
 		apiv1.GET("/setck", api.SetCk)
+		apiv1.GET("/ws", api.Ping)
 	}
 
 	return r
