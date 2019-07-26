@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"math/rand"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 )
@@ -122,95 +121,74 @@ type WsPoker struct {
 	code string
 	mt int
 }
-var wspoker []WsPoker
+
+var Wspokers map[string][]WsPoker
+
 //webSocket请求ping 返回pong  
-func Ping(c *gin.Context) {  
+func Ping(c *gin.Context) {
 	//升级get请求为webSocket协议
-	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)  
-	if err != nil {  
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+	   fmt.Println(err)
 	   return  
-	}  
-	defer ws.Close()  
-	code := ""
+	}
+	defer ws.Close()
 	for {
 	   //读取ws中的数据  
 	   mt, message, err := ws.ReadMessage()  
-	   if err != nil {  
+	   if err != nil {
+	      fmt.Println(err)
 		  break  
 	   }
 	   msg := string(message)
+	   code := getUrlParams(msg, "code")
+	   fmt.Println(code)
+	   if (code == "") {
+	        fmt.Println("群组不存在[" + msg + "]")
+	        break
+	   }
 	     
 	   //链接
 	   if (strings.Index(msg, "type=1") != -1) {
-			fmt.Println(wspoker)
-			str := strings.Split(msg, "&")
-			strr := strings.Split(str[1], "=")
-			code = strr[1]
-			wsClint := WsPoker{ws:ws,code:strr[1],mt:mt}
-			wspoker = append(wspoker, wsClint)
-			fmt.Println(wspoker)
+	        if (len(Wspokers) == 0) {
+	            Wspokers = make(map[string][]WsPoker);
+	        }
+            wsclient := WsPoker{ws:ws, code:code, mt:mt}
+            Wspokers[code] = append(Wspokers[code],wsclient);
+			fmt.Println(Wspokers)
 		//翻牌
 	   } else if (strings.Index(msg, "type=2") != -1) {
-		    len := len(msg)
-			poker := msg[len-1:]
-			isOver := 1
-			num := 0
-			for  k,v := range wspoker{
+            poker := getUrlParams(msg,"poker")
+            if (poker == "") {
+                fmt.Println("选项卡不存在[" + msg + "]")
+                break
+            }
+            //var wsPoker WsPoker
+			for  k, v := range Wspokers[code]{
 				if (v.ws == ws){
-					wspoker[k].Poker = poker
+					Wspokers[code][k].Poker = poker
 				}
-				if( v.code == code){
-					if(wspoker[k].Poker == ""){
-						isOver = 0
-					}
-					num += 1
-				}
-				
 			}
-			fmt.Println(wspoker)
-			fmt.Println(isOver)
-			fmt.Println(num)
-			if(isOver == 1 && num != 1){
-				
-				res := make(map[string]int)
-				for  _,v := range wspoker{
-					if (v.code == code){
-						if _, ok := res[v.Poker]; ok {
-							res[v.Poker] += 1
-						}else{
-							res[v.Poker] = 1
-						}
-					}
-				}
-				mjson,_ :=json.Marshal(res)
-				//写入ws数据
-				for  _,v := range wspoker{
-					if (v.code == code){
-						err = v.ws.WriteMessage(v.mt, mjson)
-						fmt.Println(v.mt)
-						fmt.Println("发送消息")  
-						if err != nil {  
-							
-						} 
-					}
-				} 
-			}
+			fmt.Println(Wspokers)
 		//重新开始	
 	   } else if (strings.Index(msg, "type=3") != -1) {
-			for  k,v := range wspoker{
-				if(v.code == code){
-					wspoker[k].Poker = ""
-				}
+			for  _,v := range Wspokers[code]{
+				v.Poker = ""
 			}
-			fmt.Println(wspoker)
+			fmt.Println(Wspokers[code])
 	   }
-	   
 	}
-	//断开链接
-	for  k,v := range wspoker{
-		if (v.ws == ws){
-			wspoker = append(wspoker[:k], wspoker[k+1:]...)
-		}
-	}
-	fmt.Println(wspoker)
- }  
+ }
+
+ func getUrlParams(url,key string) (string) {
+        strArr := strings.Split(url, "&")
+        for _,v := range strArr{
+            valArr := strings.Split(v, "=")
+
+            if (key == valArr[0]) {
+                return valArr[1]
+            }
+
+        }
+        return ""
+ }
