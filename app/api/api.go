@@ -116,10 +116,10 @@ var upGrader = websocket.Upgrader{
 	},  
 } 
 type WsPoker struct {
-	ws *websocket.Conn
+	Ws *websocket.Conn
 	Poker string `json:"poker"`
-	code string
-	mt int
+	Code string
+	Mt int
 }
 
 var Wspokers map[string][]WsPoker
@@ -133,6 +133,7 @@ func Ping(c *gin.Context) {
 	   return  
 	}
 	defer ws.Close()
+	code := ""
 	for {
 	   //读取ws中的数据  
 	   mt, message, err := ws.ReadMessage()  
@@ -141,19 +142,19 @@ func Ping(c *gin.Context) {
 		  break  
 	   }
 	   msg := string(message)
-	   code := getUrlParams(msg, "code")
-	   fmt.Println(code)
-	   if (code == "") {
-	        fmt.Println("群组不存在[" + msg + "]")
-	        break
-	   }
-	     
+	   
 	   //链接
 	   if (strings.Index(msg, "type=1") != -1) {
 	        if (len(Wspokers) == 0) {
 	            Wspokers = make(map[string][]WsPoker);
-	        }
-            wsclient := WsPoker{ws:ws, code:code, mt:mt}
+			}
+			code = getUrlParams(msg, "code")
+			fmt.Println(code)
+			if (code == "") {
+					fmt.Println("群组不存在[" + msg + "]")
+					break
+			}
+            wsclient := WsPoker{Ws:ws, Code:code, Mt:mt}
             Wspokers[code] = append(Wspokers[code],wsclient);
 			fmt.Println(Wspokers)
 		//翻牌
@@ -165,7 +166,7 @@ func Ping(c *gin.Context) {
             }
             //var wsPoker WsPoker
 			for  k, v := range Wspokers[code]{
-				if (v.ws == ws){
+				if (v.Ws == ws){
 					Wspokers[code][k].Poker = poker
 				}
 			}
@@ -177,6 +178,12 @@ func Ping(c *gin.Context) {
 			}
 			fmt.Println(Wspokers[code])
 	   }
+	}
+	//断开链接
+	for k,v := range Wspokers[code]{
+		if( v.Ws == ws){
+			Wspokers[code] = append(Wspokers[code][:k], Wspokers[code][:k+1]...) 
+		}
 	}
  }
 
