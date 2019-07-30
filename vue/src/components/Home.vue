@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {cardClick} from '../js/Home.js'
+import {cardClick, httpTest} from '../js/Home.js'
 export default {
   name: 'Home',
   data () {
@@ -18,7 +18,8 @@ export default {
     }
   },
   methods: {
-    cardClick
+    cardClick,
+    httpTest
   }
 }
 </script>

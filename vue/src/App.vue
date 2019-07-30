@@ -6,8 +6,13 @@
 
 <script>
 import Home from './components/Home'
+import {initWebSocket} from './js/socket.js'
 export default {
   name: 'App',
+  mounted () {
+    window.room_id = this.$route.query.code
+    initWebSocket()
+  },
   components: {
     Home
   }
