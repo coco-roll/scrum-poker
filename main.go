@@ -42,9 +42,9 @@ func needleTrack() {
                     mjson,_ :=json.Marshal(res)
                     // 写入ws数据
                     for  _, v := range api.Wspokers[k]{
-                        err := v.ws.WriteMessage(v.ws, mjson)
+                        err := v.Ws.WriteMessage(v.Mt, mjson)
                         if err != nil {
-                            fmt.Println("[" + strconv.Itoa(v.mt) + "]:推送结果失败")
+                            fmt.Println("[" + strconv.Itoa(v.Mt) + "]:推送结果失败")
                         }
                     }
                     //断开链接

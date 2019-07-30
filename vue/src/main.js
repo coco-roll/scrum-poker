@@ -3,7 +3,12 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Axios from 'axios'
+import Vuex from 'vuex'
 
+Vue.use(Vuex)
+
+Vue.prototype.$axios = Axios
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
