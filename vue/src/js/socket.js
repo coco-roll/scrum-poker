@@ -20,6 +20,7 @@ function websocketonerror () { //  连接建立失败重连
 }
 export function websocketonmessage (e) {
   console.log(e)
+  window.location.href = '/#/pick?ret=' + e.data
 }
 function websocketclose (e) { // 关闭
   console.log('断开连接', e)
