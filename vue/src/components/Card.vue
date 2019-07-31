@@ -12,7 +12,6 @@ export default {
   },
   methods: {
     goHome () {
-      console.log(this.$route.query)
       this.$router.push({path: '/'})
     }
   }

@@ -8,7 +8,7 @@ export function cardClick (num) {
 
 export function httpTest () {
   this.$axios
-    .get('http://192.168.83.137:8000/api/test')
+    .get(this.httpUrl+'/api/test')
     .then(function (response) {
       console.log(response)
     })
