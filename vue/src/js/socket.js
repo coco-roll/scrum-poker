@@ -20,8 +20,17 @@ function websocketonerror () { //  连接建立失败重连
 }
 export function websocketonmessage (e) {
   console.log(e)
-  window.location.href = '/#/pick?ret=' + e.data
+  window.location.href = '/#/pick?ret=' + e.data + '&code=' + getQueryString('code')
 }
 function websocketclose (e) { // 关闭
   console.log('断开连接', e)
+}
+function getQueryString(name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+
+  var r = window.location.hash.substr(1).match(reg);
+  if (r != null) {
+    return unescape(r[2]);
+  }
+  return null;
 }

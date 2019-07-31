@@ -3,7 +3,7 @@ export function cardClick (num) {
   let message = 'type=2&code=' + room_id + '&poker=' + num
   console.log(message)
   websocketsend(message)
-  this.$router.push({path: '/card', query: {num: num}})
+  this.$router.push({path: '/card', query: {num: num, code: room_id}})
 }
 
 export function httpTest () {
