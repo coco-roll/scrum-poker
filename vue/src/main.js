@@ -8,8 +8,8 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-Vue.prototype.wsUrl = 'ws://192.168.83.137:8000/api/ws'
-Vue.prototype.httpUrl = 'http://192.168.83.137:8000'
+Vue.prototype.wsUrl = 'ws://192.168.0.101:8000/api/ws'
+Vue.prototype.httpUrl = 'http://192.168.0.101:8000'
 Vue.prototype.$axios = Axios
 Vue.config.productionTip = false
 

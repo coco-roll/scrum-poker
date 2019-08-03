@@ -1,9 +1,9 @@
 import {websocketsend} from './socket.js'
 export function cardClick (num) {
-  let message = 'type=2&code=' + room_id + '&poker=' + num
+  let message = 'type=2&code=' + window.room_id + '&poker=' + num
   console.log(message)
   websocketsend(message)
-  this.$router.push({path: '/card', query: {num: num, code: room_id}})
+  this.$router.push({path: '/card', query: {num: num, code: window.room_id}})
 }
 
 export function httpTest () {

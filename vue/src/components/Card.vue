@@ -12,7 +12,7 @@ export default {
   },
   methods: {
     goHome () {
-      this.$router.push({path: '/', query: {code: code}})
+      this.$router.push({path: '/', query: {code: this.$route.query.code}})
     }
   }
 }
