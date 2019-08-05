@@ -37,7 +37,15 @@ func needleTrack() {
                 // 游戏是否结束
                 if (isOverNot(k)) {
                     res := make(map[string]int)
-                    res["1"] = 3
+                    for  _,v := range api.Wspokers[k]{
+                        
+                        if _, ok := res[v.Poker]; ok {
+                            res[v.Poker] += 1
+                        }else{
+                            res[v.Poker] = 1
+                        }
+                        
+                    }
 
                     mjson,_ :=json.Marshal(res)
                     // 写入ws数据
@@ -48,7 +56,7 @@ func needleTrack() {
                         }
                     }
                     //断开链接
-                    delete(api.Wspokers, k)
+                    // delete(api.Wspokers, k)
                 }
             }
         }

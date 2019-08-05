@@ -178,8 +178,8 @@ func Ping(c *gin.Context) {
 			fmt.Println(Wspokers)
 			//重新开始
 		} else if strings.Index(msg, "type=3") != -1 {
-			for _, v := range Wspokers[code] {
-				v.Poker = ""
+			for k, _ := range Wspokers[code] {
+				Wspokers[code][k].Poker = ""
 			}
 			fmt.Println(Wspokers[code])
 		}
