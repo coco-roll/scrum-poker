@@ -15,13 +15,14 @@ func isOverNot(key string) (is_over bool) {
     // 玩家个数
     sec, _:= setting.Cfg.GetSection("app")
     palyer_num, _:= strconv.Atoi(sec.Key("PLAYER_NUM").String())
+    fmt.Println(palyer_num)
     len_wspokers := len(api.Wspokers[key])
     if (len_wspokers == 0) {
         return false
     }
 
     for _, v := range api.Wspokers[key] {
-        if ((len_wspokers < palyer_num) || (len(v.Poker) == 0)) {
+        if ((len(v.Poker) == 0) || len_wspokers == 1) {
             return false
         }
     }
