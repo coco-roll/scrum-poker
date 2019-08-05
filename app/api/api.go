@@ -187,9 +187,10 @@ func Ping(c *gin.Context) {
 	//断开链接
 	for k, v := range Wspokers[code] {
 		if v.Ws == ws {
-			Wspokers[code] = append(Wspokers[code][:k], Wspokers[code][:k+1]...)
+			Wspokers[code] = append(Wspokers[code][:k], Wspokers[code][k+1:]...)
 		}
 	}
+	fmt.Println(Wspokers[code])
 }
 
 func getUrlParams(url, key string) string {
