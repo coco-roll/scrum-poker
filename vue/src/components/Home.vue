@@ -37,7 +37,7 @@ export default {
     display: inline-block;
   }
   .card {
-    background-color: #FF6800;
+    background-color: #4589F7;
     border-radius:10px;
     border:1px solid #000;
     width: 30%;
@@ -46,10 +46,10 @@ export default {
     text-align: center;
     line-height:150px;
     margin: 20px;
+    color: #ffffff;
   }
 
   .homeback{
-    background-color: #97A889;
     height: 100%;
     /*display: flex;*/
     /*justify-content: center;*/
