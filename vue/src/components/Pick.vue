@@ -87,7 +87,7 @@ export default {
   height: 50px;
   line-height: 50px;
   color: #222222;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: bold;
   width: 100%;
   position: absolute;
@@ -132,6 +132,8 @@ export default {
   line-height: 50px;
   background: #4589F7;
   border-radius: 5px;
+  color: #ffffff;
+  font-size: 20px;
 }
 .box_m{
   width: 100%;
