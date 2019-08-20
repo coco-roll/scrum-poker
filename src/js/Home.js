@@ -16,3 +16,13 @@ export function httpTest () {
       console.log(error)
     })
 }
+
+export function enter () {
+  if(this.isShow){
+    this.isShow = false;
+  }else{
+    this.isShow = true;
+  }
+  
+}
+
